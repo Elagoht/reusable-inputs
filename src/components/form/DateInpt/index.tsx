@@ -3,9 +3,10 @@
 import Pretty from "@/helpers/prettiers"
 import classNames from "classnames"
 import { CalendarDaysIcon, CircleAlertIcon, CircleCheckIcon } from "lucide-react"
-import { FC, InputHTMLAttributes, ReactNode, useRef, useState } from "react"
+import { ChangeEvent, FC, InputHTMLAttributes, ReactNode, useEffect, useState } from "react"
+import DatePicker from "./DatePicker"
 
-interface IDatePickerProps extends Omit<
+interface IDateInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type"
 > {
@@ -24,17 +25,43 @@ interface IDatePickerProps extends Omit<
   iconRight?: ReactNode
   validityIcons?: boolean
   calendarIcon?: boolean
+  minDate?: Date
+  maxDate?: Date
 }
 
-const DatePicker: FC<IDatePickerProps> = ({
+const DateInput: FC<IDateInputProps> = ({
   type = "date", optional = false,
   label, error, success, message,
   iconLeft, iconRight, validityIcons,
-  calendarIcon, ...props
+  calendarIcon, minDate, maxDate,
+  ...props
 }) => {
   const [isFocused, setIsFocused] = useState<boolean>(false)
-  const [isFilled, setIsFilled] = useState<boolean>(Boolean(props.value))
-  const selfRef = useRef<HTMLInputElement>(null)
+  const [isFilled, setIsFilled] = useState<boolean>(true)
+  const [showPicker, setShowPicker] = useState<boolean>(false)
+  const [pickedDate, setPickedDate] = useState<string>(
+    (props.defaultValue
+      ? new Date(props.defaultValue as string)
+      : props.value
+        ? new Date(props.value as string)
+        : new Date()
+    ).toISOString().split("T")[0].split("-").reverse().join("/")
+  )
+
+  useEffect(() => {
+    if (pickedDate.length !== 10) return
+    props.onChange?.({
+      target: {
+        value: `${new Date(
+          Number(pickedDate.slice(-4)),
+          Number(pickedDate.slice(3, 5)) - 1,
+          Number(pickedDate.slice(0, 2))
+        ).toISOString().split("T")[0]
+          }T00:00:00.000Z`
+      }
+    } as ChangeEvent<HTMLInputElement>)
+  }, [pickedDate]) // eslint-disable-line react-hooks/exhaustive-deps
+
 
   return <div className={classNames({
     "flex flex-col gap-0.5": true,
@@ -61,14 +88,19 @@ const DatePicker: FC<IDatePickerProps> = ({
         {label}
       </span>
 
-      {calendarIcon
-        ? <CalendarDaysIcon />
-        : iconLeft
-      }
+      <button
+        type="button"
+        className="relative"
+        onClick={() => pickedDate.length === 10 && setShowPicker(true)}
+      >
+        {calendarIcon
+          ? <CalendarDaysIcon />
+          : iconLeft
+        }
+      </button>
 
       <input
         {...props}
-        ref={selfRef}
         type="text"
         className={classNames({
           "bg-transparent pt-3.5 pb-0.5 w-full text-gray-900 dark:text-gray-100 rounded-md outline-none max-w-none min-w-0 h-10": true,
@@ -76,14 +108,10 @@ const DatePicker: FC<IDatePickerProps> = ({
           "pl-8 -ml-8": calendarIcon || iconLeft,
         })}
         defaultValue={props.defaultValue
-          ? Pretty.phoneNumber((props.defaultValue as string).slice(-10))
+          ? Pretty.date((props.defaultValue as string).slice(-10))
           : undefined
         }
-        value={
-          typeof props.value === "string"
-            ? Pretty.phoneNumber(props.value.slice(-10))
-            : undefined
-        }
+        value={Pretty.date(pickedDate)}
         onFocus={(event) => {
           props.disabled || props.readOnly || setIsFocused(true)
           props.onFocus?.(event)
@@ -110,6 +138,7 @@ const DatePicker: FC<IDatePickerProps> = ({
                 : ""
             }
           })
+          setPickedDate(event.target.value)
         }}
       />
 
@@ -128,7 +157,27 @@ const DatePicker: FC<IDatePickerProps> = ({
         {error ?? success ?? message}
       </small>
     }
+
+    <div
+      className={classNames({
+        "absolute inset-0 z-10 flex items-center justify-center bg-black transition-all duration-300 ease-in-out": true,
+        "opacity bg-opacity-75": showPicker,
+        "opacity-0 pointer-events-none": !showPicker,
+      })}
+      onClick={() => setShowPicker(false)}
+    >
+      <DatePicker
+        selectedDate={pickedDate}
+        setSelectedDate={(date: string) => {
+          setPickedDate(date)
+        }}
+        minDate={minDate}
+        maxDate={maxDate}
+        show={showPicker}
+        setShow={() => setShowPicker(false)}
+      />
+    </div>
   </div>
 }
 
-export default DatePicker
+export default DateInput

@@ -1,12 +1,12 @@
 "use client"
 
-import DatePicker from "@/components/form/DatePicker"
+import DateInput from "@/components/form/DateInpt"
 import Input from "@/components/form/Input"
-import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
+import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
 import { FC } from "react"
 
 const MainPage: FC = () =>
-  <main className="flex flex-col items-center justify-center h-screen gap-2">
+  <main className="flex flex-col items-center justify-center min-h-screen gap-2">
     <h1 className="text-xl font-semibold">
       Reusable Input Components
     </h1>
@@ -16,11 +16,17 @@ const MainPage: FC = () =>
     </p>
 
     <form className="flex flex-col gap-4 w-full max-w-sm">
-      <DatePicker
+      <DateInput
         label="Doğum Tarihi"
         type="date"
         calendarIcon
         validityIcons
+        minDate={new Date()}
+        maxDate={new Date(
+          new Date().getFullYear() + 1,
+          new Date().getMonth(),
+          new Date().getDate()
+        )}
         onChange={e => console.log(e.target.value)}
       />
 
@@ -57,7 +63,6 @@ const MainPage: FC = () =>
         type="time"
         iconLeft={<ClockIcon />}
         iconRight={<CakeIcon />}
-        onChange={e => console.log(e.target.value)}
       />
 
       <Input
