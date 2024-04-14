@@ -1,3 +1,6 @@
+"use client"
+
+import DatePicker from "@/components/form/DatePicker"
 import Input from "@/components/form/Input"
 import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
 import { FC } from "react"
@@ -13,6 +16,14 @@ const MainPage: FC = () =>
     </p>
 
     <form className="flex flex-col gap-4 w-full max-w-sm">
+      <DatePicker
+        label="Doğum Tarihi"
+        type="date"
+        calendarIcon
+        validityIcons
+        onChange={e => console.log(e.target.value)}
+      />
+
       <Input
         label="İsim"
         type="text"
@@ -46,6 +57,7 @@ const MainPage: FC = () =>
         type="time"
         iconLeft={<ClockIcon />}
         iconRight={<CakeIcon />}
+        onChange={e => console.log(e.target.value)}
       />
 
       <Input
