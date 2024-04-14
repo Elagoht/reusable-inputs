@@ -21,12 +21,12 @@ const MainPage: FC = () =>
         type="date"
         calendarIcon
         validityIcons
-        minDate={new Date()}
-        maxDate={new Date(
-          new Date().getFullYear() + 1,
-          new Date().getMonth(),
-          new Date().getDate()
-        )}
+        // minDate={new Date()}
+        // maxDate={new Date(
+        //   new Date().getFullYear() + 1,
+        //   new Date().getMonth(),
+        //   new Date().getDate()
+        // )}
         onChange={e => console.log(e.target.value)}
       />
 

@@ -90,7 +90,7 @@ const DateInput: FC<IDateInputProps> = ({
 
       <button
         type="button"
-        className="relative"
+        className="bg-gray-200 dark:bg-gray-800 -m-1 p-1 relative rounded-full transition-all duration-200 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 h-8 w-8"
         onClick={() => pickedDate.length === 10 && setShowPicker(true)}
       >
         {calendarIcon
