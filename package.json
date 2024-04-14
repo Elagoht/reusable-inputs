@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "formik": "^2.4.5",
     "lucide-react": "^0.367.0",
     "next": "14.2.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",

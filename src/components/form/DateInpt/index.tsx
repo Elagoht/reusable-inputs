@@ -3,7 +3,7 @@
 import Pretty from "@/helpers/prettiers"
 import classNames from "classnames"
 import { CalendarDaysIcon, CircleAlertIcon, CircleCheckIcon } from "lucide-react"
-import { ChangeEvent, FC, InputHTMLAttributes, ReactNode, useEffect, useState } from "react"
+import { ChangeEvent, FC, FocusEvent, InputHTMLAttributes, ReactNode, useEffect, useState } from "react"
 import DatePicker from "./DatePicker"
 
 interface IDateInputProps extends Omit<
@@ -38,6 +38,7 @@ const DateInput: FC<IDateInputProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const [isFilled, setIsFilled] = useState<boolean>(true)
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showPicker, setShowPicker] = useState<boolean>(false)
   const [pickedDate, setPickedDate] = useState<string>(
     (props.defaultValue
@@ -49,19 +50,29 @@ const DateInput: FC<IDateInputProps> = ({
   )
 
   useEffect(() => {
+    if (isFirstLoad) {
+      setIsFirstLoad(false);
+      return; // İlk yüklemeyi yap ve useEffect'i burada sonlandır
+    }
+
     if (pickedDate.length !== 10) return
     props.onChange?.({
       target: {
+        name: props.name,
         value: `${new Date(
           Number(pickedDate.slice(-4)),
           Number(pickedDate.slice(3, 5)) - 1,
-          Number(pickedDate.slice(0, 2))
+          Number(pickedDate.slice(0, 2)) + 1
         ).toISOString().split("T")[0]
           }T00:00:00.000Z`
       }
     } as ChangeEvent<HTMLInputElement>)
+    props.onBlur?.({
+      target: {
+        name: props.name
+      }
+    } as FocusEvent<HTMLInputElement>)
   }, [pickedDate]) // eslint-disable-line react-hooks/exhaustive-deps
-
 
   return <div className={classNames({
     "flex flex-col gap-0.5": true,

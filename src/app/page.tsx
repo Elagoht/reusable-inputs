@@ -2,8 +2,10 @@
 
 import DateInput from "@/components/form/DateInpt"
 import Input from "@/components/form/Input"
+import { Form, Formik } from "formik"
 import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
 import { FC } from "react"
+import { date, object } from "yup"
 
 const MainPage: FC = () =>
   <main className="flex flex-col items-center justify-center min-h-screen gap-2">
@@ -15,112 +17,155 @@ const MainPage: FC = () =>
       Reusable input components for Next.js
     </p>
 
-    <form className="flex flex-col gap-4 w-full max-w-sm">
-      <DateInput
-        label="Doğum Tarihi"
-        type="date"
-        calendarIcon
-        validityIcons
-        // minDate={new Date()}
-        // maxDate={new Date(
-        //   new Date().getFullYear() + 1,
-        //   new Date().getMonth(),
-        //   new Date().getDate()
-        // )}
-        onChange={e => console.log(e.target.value)}
-      />
-
-      <Input
-        label="İsim"
-        type="text"
-        iconLeft={<UserIcon />}
-        success="İsim doğru girildi"
-      />
-
-      <Input
-        label="Parola"
-        type="password"
-        iconLeft={<KeyIcon />}
-        error="Parola yanlış girildi"
-      />
-
-      <Input
-        label="Doğum Tarihi"
-        type="date"
-        iconLeft={<CalendarDaysIcon />}
-        iconRight={<CakeIcon />}
-        message="Doğum tarihinizi girin"
-        min={new Date().toISOString().split("T")[0]}
-        max={(new Date(
-          new Date().getFullYear() + 1,
+    <Formik
+      initialValues={{
+        birthDate: new Date(
+          new Date().getFullYear() - 18,
           new Date().getMonth(),
-          new Date().getDate()
-        )).toISOString().split("T")[0]}
-      />
+          new Date().getDate() + 1
+        ).toISOString().split("T")[0]
+      }}
+      validationSchema={object().shape({
+        birthDate: date()
+          .max(new Date(
+            new Date().getFullYear() - 18,
+            new Date().getMonth(),
+            new Date().getDate()
+          ), "18 yaşından küçükler kayıt olamaz")
+          .min(new Date(
+            new Date().getFullYear() - 100,
+            new Date().getMonth(),
+            new Date().getDate()
+          ), "100 yaşından büyükler kayıt olamaz")
+          .required("Doğum tarihi boş bırakılamaz")
+      })}
+      onSubmit={values => console.log(values)}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+      }) =>
+        <Form className="flex flex-col gap-4 w-full max-w-sm">
+          <DateInput
+            label="Doğum Tarihi"
+            name="birthDate"
+            type="date"
+            calendarIcon
+            validityIcons
+            minDate={new Date(
+              new Date().getFullYear() - 100,
+              new Date().getMonth(),
+              new Date().getDate()
+            )}
+            maxDate={new Date(
+              new Date().getFullYear() - 18,
+              new Date().getMonth(),
+              new Date().getDate()
+            )}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.birthDate}
+            error={touched.birthDate ? errors.birthDate : undefined}
+            success={touched.birthDate ? "Doğum tarihi geçerli" : undefined}
+            message="Doğum tarihinizi girin"
+          />
 
-      <Input
-        label="Doğum Saati"
-        type="time"
-        iconLeft={<ClockIcon />}
-        iconRight={<CakeIcon />}
-      />
+          <Input
+            label="İsim"
+            type="text"
+            iconLeft={<UserIcon />}
+            success="İsim doğru girildi"
+          />
 
-      <Input
-        label="Başlangıç Zamanı"
-        type="datetime-local"
-        iconLeft={<FlagTriangleLeftIcon />}
-        iconRight={<FlagTriangleRightIcon />}
-        message="Validasyon ikonları bunda da var"
-        validityIcons
-      />
+          <Input
+            label="Parola"
+            type="password"
+            iconLeft={<KeyIcon />}
+            error="Parola yanlış girildi"
+          />
 
-      <Input
-        label="Ay"
-        type="month"
-        iconLeft={<CalendarIcon />}
-        validityIcons
-        error="Ay yanlış girildi"
-      />
+          <Input
+            label="Doğum Tarihi"
+            type="date"
+            iconLeft={<CalendarDaysIcon />}
+            iconRight={<CakeIcon />}
+            message="Doğum tarihinizi girin"
+            min={new Date().toISOString().split("T")[0]}
+            max={(new Date(
+              new Date().getFullYear() + 1,
+              new Date().getMonth(),
+              new Date().getDate()
+            )).toISOString().split("T")[0]}
+          />
 
-      <Input
-        label="Hafta"
-        type="week"
-        iconLeft={<CalendarDaysIcon />}
-        validityIcons
-        success="Hafta doğru girildi"
-      />
+          <Input
+            label="Doğum Saati"
+            type="time"
+            iconLeft={<ClockIcon />}
+            iconRight={<CakeIcon />}
+          />
 
-      <Input
-        label="Numara"
-        type="number"
-        iconLeft={<HashIcon />}
-        optional
-      />
+          <Input
+            label="Başlangıç Zamanı"
+            type="datetime-local"
+            iconLeft={<FlagTriangleLeftIcon />}
+            iconRight={<FlagTriangleRightIcon />}
+            message="Validasyon ikonları bunda da var"
+            validityIcons
+          />
 
-      <Input
-        label="E-posta"
-        type="email"
-        iconLeft={<MailIcon />}
-      />
+          <Input
+            label="Ay"
+            type="month"
+            iconLeft={<CalendarIcon />}
+            validityIcons
+            error="Ay yanlış girildi"
+          />
 
-      <Input
-        label="Telefon"
-        type="tel"
-        iconLeft={<PhoneIcon />}
-      />
+          <Input
+            label="Hafta"
+            type="week"
+            iconLeft={<CalendarDaysIcon />}
+            validityIcons
+            success="Hafta doğru girildi"
+          />
 
-      <Input
-        label="Web Site"
-        type="url"
-        iconLeft={<Globe2Icon />}
-      />
+          <Input
+            label="Numara"
+            type="number"
+            iconLeft={<HashIcon />}
+            optional
+          />
 
-      <Input
-        label="Arama"
-        type="search"
-        iconLeft={<SearchIcon />}
-      />
-    </form>
+          <Input
+            label="E-posta"
+            type="email"
+            iconLeft={<MailIcon />}
+          />
+
+          <Input
+            label="Telefon"
+            type="tel"
+            iconLeft={<PhoneIcon />}
+          />
+
+          <Input
+            label="Web Site"
+            type="url"
+            iconLeft={<Globe2Icon />}
+          />
+
+          <Input
+            label="Arama"
+            type="search"
+            iconLeft={<SearchIcon />}
+          />
+        </Form>
+      }
+    </Formik>
   </main>
 
 export default MainPage

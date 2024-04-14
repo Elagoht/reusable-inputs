@@ -112,6 +112,11 @@ const DatePicker: FC<IDatePickerProps> = ({
             }/${year}`
           )
         }}
+        disabled={(minDate && new Date(
+          Number(selectedDate.slice(-4)),
+          Number(selectedDate.slice(3, 5)) - 2,
+          1
+        ) < minDate)}
       >
         <ChevronLeftCircleIcon className="stroke-gray-500" />
       </button>
@@ -152,7 +157,11 @@ const DatePicker: FC<IDatePickerProps> = ({
             }/${year}`
           )
         }}
-        disabled={(maxDate && new Date() > maxDate)}
+        disabled={(maxDate && new Date(
+          Number(selectedDate.slice(-4)),
+          Number(selectedDate.slice(3, 5)),
+          1
+        ) > maxDate)}
       >
         <ChevronRightCircleIcon className="stroke-gray-500" />
       </button>
@@ -178,12 +187,17 @@ const DatePicker: FC<IDatePickerProps> = ({
             1
           )
           date.setDate(index - (date.getDay() + 6) % 7 + 1)
-          const isDisabled = (minDate && date <= minDate) || (maxDate && date >= maxDate)
-          const isSelected = date.toISOString().split("T")[0] === new Date(
-            Number(selectedDate.slice(-4)),
-            Number(selectedDate.slice(3, 5)) - 1,
-            Number(selectedDate.slice(0, 2))
-          ).toISOString().split("T")[0]
+          const isDisabled = (minDate && date < minDate) || (maxDate && date > maxDate)
+          let isSelected: boolean
+          try {
+            isSelected = date.toISOString().split("T")[0] === new Date(
+              Number(selectedDate.slice(-4)),
+              Number(selectedDate.slice(3, 5)) - 1,
+              Number(selectedDate.slice(0, 2))
+            ).toISOString().split("T")[0]
+          } catch (error) {
+            isSelected = false
+          }
 
           return <button
             key={index}
@@ -221,11 +235,11 @@ const DatePicker: FC<IDatePickerProps> = ({
             Number(selectedDate.slice(-4)),
             index + 1,
             1
-          ) <= minDate) || (maxDate && new Date(
+          ) < minDate) || (maxDate && new Date(
             Number(selectedDate.slice(-4)),
             index,
             1
-          ) >= maxDate)
+          ) > maxDate)
           return <button
             type="button"
             key={month}
@@ -257,6 +271,10 @@ const DatePicker: FC<IDatePickerProps> = ({
         <button
           type="button"
           onClick={() => setYearPage(prev => prev - 10)}
+          className={classNames({
+            "pointer-events-none opacity-50": minDate && Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 - 10 < minDate.getFullYear()
+          })}
+          disabled={minDate && Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 - 10 < minDate.getFullYear()}
         >
           <ChevronLeftCircleIcon className="stroke-gray-500" />
         </button>
@@ -272,19 +290,34 @@ const DatePicker: FC<IDatePickerProps> = ({
         <button
           type="button"
           onClick={() => setYearPage(prev => prev + 10)}
+          className={classNames({
+            "pointer-events-none opacity-50": maxDate && Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + 10 > maxDate.getFullYear()
+          })}
+          disabled={maxDate && Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + 10 > maxDate.getFullYear()}
         >
           <ChevronRightCircleIcon className="stroke-gray-500" />
         </button>
       </div>
 
       <div /* Years */ className="grid grid-cols-2 gap-1 flex-1">
-        {Array.from({ length: 10 }).map((_, index) =>
-          <button
+        {Array.from({ length: 10 }).map((_, index) => {
+          const isDisabled = minDate && new Date(
+            Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index,
+            Number(selectedDate.slice(3, 5)) - 1,
+            1
+          ) < minDate || maxDate && new Date(
+            Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index,
+            Number(selectedDate.slice(3, 5)) - 1,
+            1
+          ) > maxDate
+
+          return <button
             type="button"
             key={index}
             className={classNames({
               "text-center p-1 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-lg": true,
               "!bg-emerald-400 dark:!bg-emerald-600 hover:!bg-emerald-300 dark:hover:!bg-emerald-500": selectedDate.slice(-4) === (Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index).toString(),
+              "pointer-events-none opacity-50": isDisabled,
             })}
             onClick={() => {
               setSelectedDate(
@@ -294,10 +327,11 @@ const DatePicker: FC<IDatePickerProps> = ({
               )
               setPickerMode("month")
             }}
+            disabled={isDisabled}
           >
             {Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index}
           </button>
-        )}
+        })}
       </div>
     </>
     }
