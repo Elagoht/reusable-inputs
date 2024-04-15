@@ -10,8 +10,6 @@ interface IDatePickerProps {
   minDate?: Date
   maxDate?: Date
   calendarLabel?: string
-  onConfirm?: (date: Date) => void
-  onClose?: () => void
 }
 
 const months = [
@@ -26,7 +24,7 @@ const weekDays = ["Pzt", "Sal", "Çrş", "Prş", "Cum", "Cmt", "Pzr"]
 const DatePicker: FC<IDatePickerProps> = ({
   selectedDate, setSelectedDate,
   show, setShow, minDate, maxDate,
-  calendarLabel, onConfirm, onClose
+  calendarLabel
 }) => {
 
   const [pickerMode, setPickerMode] = useState<"date" | "month" | "year">("date")
@@ -71,10 +69,7 @@ const DatePicker: FC<IDatePickerProps> = ({
 
       <button
         type="button"
-        onClick={() => {
-          setShow(false)
-          onClose?.()
-        }}
+        onClick={() => setShow(false)}
       >
         <XCircleIcon className="stroke-red-800 hover:stroke-red-600 dark:stroke-red-500 dark:hover:stroke-red-400" size={16} />
       </button>
@@ -225,7 +220,6 @@ const DatePicker: FC<IDatePickerProps> = ({
                 }/${(date.getMonth() + 1).toString().padStart(2, "0")
                 }/${date.getFullYear()}`
               )
-              onConfirm?.(date)
               setShow(false)
             }}
           >

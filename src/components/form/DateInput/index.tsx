@@ -2,9 +2,25 @@
 
 import Pretty from "@/helpers/prettiers"
 import classNames from "classnames"
-import { CalendarDaysIcon, CircleAlertIcon, CircleCheckIcon } from "lucide-react"
+import { CalendarIcon, CircleAlertIcon, CircleCheckIcon, ClockIcon } from "lucide-react"
 import { ChangeEvent, FC, FocusEvent, InputHTMLAttributes, ReactNode, useEffect, useState } from "react"
 import DatePicker from "./DatePicker"
+import TimePicker from "./TimePicker"
+
+const convertToDateString = (date: string) =>
+  date.length === 10
+    ? `${new Date(
+      Number(date.slice(-4)),
+      Number(date.slice(3, 5)) - 1,
+      Number(date.slice(0, 2))
+    ).toISOString().split("T")[0]
+      }T00:00:00.000Z`.slice(0, 10)
+    : ""
+
+const convertToTimeString = (time: string) =>
+  time.length === 5
+    ? time.slice(5)
+    : ""
 
 interface IDateInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -14,7 +30,6 @@ interface IDateInputProps extends Omit<
   type?:
   | "date"
   | "time"
-  | "datetime-local"
   // | "month" // Not supported by all browsers
   // | "week" // Not supported by all browsers
   optional?: boolean
@@ -41,30 +56,31 @@ const DateInput: FC<IDateInputProps> = ({
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showPicker, setShowPicker] = useState<boolean>(false)
   const [pickedDate, setPickedDate] = useState<string>(
-    (props.defaultValue
-      ? new Date(props.defaultValue as string)
-      : props.value
-        ? new Date(props.value as string)
-        : new Date()
-    ).toISOString().split("T")[0].split("-").reverse().join("/")
+    type === "date"
+      ? (props.defaultValue
+        ? new Date(props.defaultValue as string)
+        : props.value
+          ? new Date(props.value as string)
+          : new Date()
+      ).toISOString().split("T")[0].split("-").reverse().join("/")
+      : (props.defaultValue
+        ? new Date(props.defaultValue as string)
+        : props.value
+          ? new Date(props.value as string)
+          : new Date()
+      ).toTimeString().slice(0, 5)
   )
 
   useEffect(() => {
-    if (isFirstLoad) {
-      setIsFirstLoad(false)
-      return
-    }
-
+    if (isFirstLoad) return setIsFirstLoad(false)
     if (pickedDate.length !== 10) return
+
     props.onChange?.({
       target: {
         name: props.name,
-        value: `${new Date(
-          Number(pickedDate.slice(-4)),
-          Number(pickedDate.slice(3, 5)) - 1,
-          Number(pickedDate.slice(0, 2)) + 1
-        ).toISOString().split("T")[0]
-          }T00:00:00.000Z`
+        value: type === "date"
+          ? convertToDateString(pickedDate)
+          : convertToTimeString(pickedDate)
       }
     } as ChangeEvent<HTMLInputElement>)
     props.onBlur?.({
@@ -102,10 +118,17 @@ const DateInput: FC<IDateInputProps> = ({
       <button
         type="button"
         className="bg-gray-200 dark:bg-gray-800 -m-1 p-1 relative rounded-full transition-all duration-200 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 h-8 w-8"
-        onClick={() => pickedDate.length === 10 && setShowPicker(true)}
+        onClick={() => pickedDate.length === (
+          type === "date"
+            ? 10
+            : 5
+        ) && setShowPicker(true)
+        }
       >
         {calendarIcon
-          ? <CalendarDaysIcon />
+          ? type === "date"
+            ? <CalendarIcon />
+            : <ClockIcon />
           : iconLeft
         }
       </button>
@@ -119,10 +142,15 @@ const DateInput: FC<IDateInputProps> = ({
           "pl-8 -ml-8": calendarIcon || iconLeft,
         })}
         defaultValue={props.defaultValue
-          ? Pretty.date((props.defaultValue as string).slice(-10))
+          ? type === "date"
+            ? Pretty.date((props.defaultValue as string).slice(10))
+            : Pretty.time((props.defaultValue as string).slice(5))
           : undefined
         }
-        value={Pretty.date(pickedDate)}
+        value={type === "date"
+          ? Pretty.date(pickedDate)
+          : Pretty.time(pickedDate)
+        }
         onFocus={(event) => {
           props.disabled || props.readOnly || setIsFocused(true)
           props.onFocus?.(event)
@@ -133,20 +161,17 @@ const DateInput: FC<IDateInputProps> = ({
         }}
         onChange={(event) => {
           setIsFilled(event.currentTarget.value.length > 0)
-          event.target.value = Pretty.date(event.target.value)
+          event.target.value = type === "date"
+            ? Pretty.date(event.target.value)
+            : Pretty.time(event.target.value)
           props.onChange?.({
             ...event,
             target: {
               ...event.target,
               name: event.target.name,
-              value: (event.target.value.length === 10)
-                ? `${new Date(
-                  Number(event.target.value.slice(-4)),
-                  Number(event.target.value.slice(3, 5)) - 1,
-                  Number(event.target.value.slice(0, 2))
-                ).toISOString().split("T")[0]
-                }T00:00:00.000Z`
-                : ""
+              value: type === "date"
+                ? convertToDateString(event.target.value)
+                : convertToTimeString(event.target.value)
             }
           })
           setPickedDate(event.target.value)
@@ -177,16 +202,24 @@ const DateInput: FC<IDateInputProps> = ({
       })}
       onClick={() => setShowPicker(false)}
     >
-      <DatePicker
-        selectedDate={pickedDate}
-        setSelectedDate={(date: string) => {
-          setPickedDate(date)
-        }}
-        minDate={minDate}
-        maxDate={maxDate}
-        show={showPicker}
-        setShow={() => setShowPicker(false)}
-      />
+      {type === "date" &&
+        <DatePicker
+          selectedDate={pickedDate}
+          setSelectedDate={(date: string) => setPickedDate(date)}
+          minDate={minDate}
+          maxDate={maxDate}
+          show={showPicker}
+          setShow={() => setShowPicker(false)}
+        />
+      }
+
+      {type === "time" &&
+        <TimePicker
+          selectedTime={pickedDate}
+          setSelectedTime={(time: string) => setPickedDate(time)}
+          setShow={() => setShowPicker(false)}
+        />
+      }
     </div>
   </div>
 }

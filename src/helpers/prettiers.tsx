@@ -39,6 +39,22 @@ class Pretty {
       }`
   }
 
+  static time = (time: string) => {
+    // If there's no time, return an empty string
+    if (!time) return ""
+    const value = (time
+      // Remove all non-digits
+      .replace(/\D/g, "")
+      // Create capture groups for each section of the time
+      .match(/(\d{0,2})(\d{0,2})/)
+    ) as RegExpMatchArray
+    if (Number(value[1]) > 23) value[1] = "00"
+    if (Number(value[2]) > 59) value[2] = "00"
+    return !value[2]
+      ? value[1]
+      : `${value[1]}:${value[2]}`
+  }
+
   static creditCard = (creditCard: string) => {
     // If there's no credit card, return an empty string
     if (!creditCard) return ""

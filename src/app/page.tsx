@@ -73,6 +73,13 @@ const MainPage: FC = () =>
             message="Doğum tarihinizi girin"
           />
 
+          <DateInput
+            label="Doğum Saati"
+            type="time"
+            iconLeft={<ClockIcon />}
+            validityIcons
+          />
+
           <Input
             label="İsim"
             type="text"
