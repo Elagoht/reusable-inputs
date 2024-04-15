@@ -1,6 +1,6 @@
 "use client"
 
-import DateInput from "@/components/form/DateInpt"
+import DateInput from "@/components/form/DateInput"
 import Input from "@/components/form/Input"
 import { Form, Formik } from "formik"
 import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
