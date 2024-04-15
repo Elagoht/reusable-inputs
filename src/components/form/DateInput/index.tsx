@@ -51,8 +51,8 @@ const DateInput: FC<IDateInputProps> = ({
 
   useEffect(() => {
     if (isFirstLoad) {
-      setIsFirstLoad(false);
-      return; // İlk yüklemeyi yap ve useEffect'i burada sonlandır
+      setIsFirstLoad(false)
+      return
     }
 
     if (pickedDate.length !== 10) return
