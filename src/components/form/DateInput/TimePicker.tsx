@@ -50,7 +50,7 @@ const TimePicker: FC<ITimePickerProps> = ({
           const delta = -event.deltaY
           const hour = (Math.min(Math.max(Math.min(Number(selectedTime.slice(0, 2)) + Math.sign(delta)), -1), 24) + 24) % 24
           setSelectedTime(
-            `${hour.toString().padStart(2, "0")
+            `${hour.toString().padStart(2, "0").slice(0, 2)
             }:${selectedTime.slice(3, 5)
             }`
           )
@@ -63,7 +63,7 @@ const TimePicker: FC<ITimePickerProps> = ({
             const delta = event.clientY - startY
             const hour = (Math.min(Math.max(Math.min(startHour + delta / 10), -1), 24) + 24) % 24
             setSelectedTime(
-              `${hour.toString().padStart(2, "0").slice(0, 2)
+              `${hour.toString().split(".")[0].padStart(2, "0")
               }:${selectedTime.slice(3, 5)}`
             )
           }
