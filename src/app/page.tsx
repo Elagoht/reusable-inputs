@@ -5,7 +5,7 @@ import Input from "@/components/form/Input"
 import { Form, Formik } from "formik"
 import { CakeIcon, CalendarDaysIcon, CalendarIcon, ClockIcon, FlagTriangleLeftIcon, FlagTriangleRightIcon, Globe2Icon, HashIcon, KeyIcon, MailIcon, PhoneIcon, SearchIcon, UserIcon } from "lucide-react"
 import { FC } from "react"
-import { date, object } from "yup"
+import { date, mixed, object } from "yup"
 
 const MainPage: FC = () =>
   <main className="flex flex-col items-center justify-center min-h-screen gap-2">
@@ -23,7 +23,8 @@ const MainPage: FC = () =>
           new Date().getFullYear() - 18,
           new Date().getMonth(),
           new Date().getDate() + 1
-        ).toISOString().split("T")[0]
+        ).toISOString().split("T")[0],
+        birthTime: new Date().toTimeString().slice(0, 5)
       }}
       validationSchema={object().shape({
         birthDate: date()
@@ -37,7 +38,13 @@ const MainPage: FC = () =>
             new Date().getMonth(),
             new Date().getDate()
           ), "100 yaşından büyükler kayıt olamaz")
-          .required("Doğum tarihi boş bırakılamaz")
+          .required("Doğum tarihi boş bırakılamaz"),
+        birthTime: mixed()
+          .test("is-valid-time", "Geçerli bir saat girin", value => {
+            if (typeof value !== "string") return false
+            const [hour, minute] = value.split(":")
+            return Number(hour) >= 0 && Number(hour) < 24 && Number(minute) >= 0 && Number(minute) < 60
+          })
       })}
       onSubmit={values => console.log(values)}
     >
@@ -49,6 +56,10 @@ const MainPage: FC = () =>
         handleBlur,
       }) =>
         <Form className="flex flex-col gap-4 w-full max-w-sm">
+          <pre>
+            {JSON.stringify(values, null, 2)}
+          </pre>
+
           <DateInput
             label="Doğum Tarihi"
             name="birthDate"
@@ -76,7 +87,13 @@ const MainPage: FC = () =>
           <DateInput
             label="Doğum Saati"
             type="time"
+            name="birthTime"
+            value={values.birthTime}
+            onChange={handleChange}
+            onBlur={handleBlur}
             iconLeft={<ClockIcon />}
+            error={touched.birthTime ? errors.birthTime : undefined}
+            success={touched.birthTime ? "Doğum saati geçerli" : undefined}
             validityIcons
           />
 

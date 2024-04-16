@@ -63,24 +63,24 @@ const DateInput: FC<IDateInputProps> = ({
           ? new Date(props.value as string)
           : new Date()
       ).toISOString().split("T")[0].split("-").reverse().join("/")
-      : (props.defaultValue
-        ? new Date(props.defaultValue as string)
-        : props.value
-          ? new Date(props.value as string)
-          : new Date()
-      ).toTimeString().slice(0, 5)
+      : props.defaultValue as string ?? props.value ?? new Date().toTimeString().slice(0, 5)
   )
+
 
   useEffect(() => {
     if (isFirstLoad) return setIsFirstLoad(false)
-    if (pickedDate.length !== 10) return
+    console.log("Picked Date: ", pickedDate)
+    if (type === "date"
+      ? pickedDate.length !== 10
+      : pickedDate.length !== 5
+    ) return
 
     props.onChange?.({
       target: {
         name: props.name,
         value: type === "date"
           ? convertToDateString(pickedDate)
-          : convertToTimeString(pickedDate)
+          : pickedDate
       }
     } as ChangeEvent<HTMLInputElement>)
     props.onBlur?.({
@@ -89,6 +89,13 @@ const DateInput: FC<IDateInputProps> = ({
       }
     } as FocusEvent<HTMLInputElement>)
   }, [pickedDate]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Prevent scrolling when the picker is open
+    document.body.style.overflow = showPicker
+      ? "hidden"
+      : "auto"
+  }, [showPicker])
 
   return <div className={classNames({
     "flex flex-col gap-0.5": true,
@@ -196,7 +203,7 @@ const DateInput: FC<IDateInputProps> = ({
 
     <div
       className={classNames({
-        "absolute inset-0 z-10 flex items-center justify-center bg-black transition-all duration-300 ease-in-out": true,
+        "fixed inset-0 z-10 flex items-center justify-center bg-black transition-all duration-300 ease-in-out": true,
         "opacity bg-opacity-75": showPicker,
         "opacity-0 pointer-events-none": !showPicker,
       })}
