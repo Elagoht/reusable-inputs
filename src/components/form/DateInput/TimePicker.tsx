@@ -17,7 +17,7 @@ const TimePicker: FC<ITimePickerProps> = ({
 }) => {
   return <div
     onClick={(event) => event.stopPropagation()}
-    className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 gap-2 flex flex-col bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 min-w-72 min-h-80 shadow-lg select-none"
+    className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 gap-2 flex flex-col bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 min-w-72 max-w-screen-md m-4 w-full min-h-80 max-h-[60%] h-full shadow-lg select-none sm:text-2xl transition-all duration-300 ease-in-out"
   >
     <div /* Close Button */ className="flex justify-between gap-2">
       <button
@@ -80,7 +80,7 @@ const TimePicker: FC<ITimePickerProps> = ({
             type="button"
             key={index}
             className={classNames({
-              "rounded-lg w-full flex items-center justify-center text-5xl bg-gray-400 dark:bg-gray-600": true,
+              "rounded-lg w-full flex items-center justify-center sm:text-9xl text-6xl transition-all duration-300 ease-in-out bg-gray-400 dark:bg-gray-600": true,
               "h-1/3 [transform:_rotateX(50deg)]": index !== 1,
               "h-1/2": index === 1,
             })}
@@ -144,7 +144,7 @@ const TimePicker: FC<ITimePickerProps> = ({
             type="button"
             key={index}
             className={classNames({
-              "rounded-lg w-full flex items-center justify-center text-5xl bg-gray-400 dark:bg-gray-600": true,
+              "rounded-lg w-full flex items-center justify-center sm:text-9xl text-6xl transition-all duration-300 ease-in-out bg-gray-400 dark:bg-gray-600": true,
               "h-1/3 [transform:_rotateX(50deg)]": index !== 1,
               "h-1/2": index === 1,
             })}
@@ -175,20 +175,13 @@ const TimePicker: FC<ITimePickerProps> = ({
       <div className="absolute inset-y-2 inset-x-0 bg-gradient-to-b from-gray-200 dark:from-gray-800 via-transparent dark:via-transparent to-gray-200 dark:to-gray-800 pointer-events-none" />
     </div>
 
-    <div className="flex justify-evenly gap-2 -mt-2">
-      <MouseIcon size={16} /> <TouchpadIcon size={16} /> <PointerIcon size={16} />
-    </div>
-    <small className="text-center text-xs">
+    <small className="text-center -mt-4">
       Kaydırarak saat ve dakika seçebilirsiniz.
     </small>
 
-    <button
-      type="button"
-      className="rounded-lg w-full p-2 bg-emerald-400 dark:bg-emerald-600 dark:text-white text-gray-800"
-      onClick={() => setShow(false)}
-    >
-      Onayla
-    </button>
+    <div className="flex justify-evenly gap-2">
+      <MouseIcon size={16} /> <TouchpadIcon size={16} /> <PointerIcon size={16} />
+    </div>
   </div>
 }
 

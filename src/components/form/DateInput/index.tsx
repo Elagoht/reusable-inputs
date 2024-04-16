@@ -69,7 +69,6 @@ const DateInput: FC<IDateInputProps> = ({
 
   useEffect(() => {
     if (isFirstLoad) return setIsFirstLoad(false)
-    console.log("Picked Date: ", pickedDate)
     if (type === "date"
       ? pickedDate.length !== 10
       : pickedDate.length !== 5

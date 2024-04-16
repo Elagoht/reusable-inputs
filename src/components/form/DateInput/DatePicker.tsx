@@ -36,7 +36,7 @@ const DatePicker: FC<IDatePickerProps> = ({
 
   return <div
     onClick={event => event.stopPropagation()}
-    className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 gap-2 flex flex-col bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 min-w-72 min-h-80 shadow-lg select-none"
+    className="border border-gray-300 dark:border-gray-700 rounded-xl p-2 gap-2 flex flex-col bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 min-w-72 max-w-screen-md m-4 w-full min-h-80 max-h-[60%] h-full shadow-lg select-none sm:text-2xl transition-all duration-300 ease-in-out"
   >
     <div /* Close Button */ className="flex justify-between gap-2">
       <button
@@ -60,7 +60,7 @@ const DatePicker: FC<IDatePickerProps> = ({
         }}
         disabled={(minDate && new Date() < minDate) || (maxDate && new Date() > maxDate)}
       >
-        <CalendarDaysIcon size={16} />
+        <CalendarDaysIcon className="w-4 h-4 sm:w-6 sm:h-6" />
       </button>
 
       <span className="leading-none">
@@ -71,7 +71,7 @@ const DatePicker: FC<IDatePickerProps> = ({
         type="button"
         onClick={() => setShow(false)}
       >
-        <XCircleIcon className="stroke-red-800 hover:stroke-red-600 dark:stroke-red-500 dark:hover:stroke-red-400" size={16} />
+        <XCircleIcon className="stroke-red-800 hover:stroke-red-600 dark:stroke-red-500 dark:hover:stroke-red-400 w-4 h-4 sm:w-6 sm:h-6" />
       </button>
     </div>
 
@@ -182,7 +182,7 @@ const DatePicker: FC<IDatePickerProps> = ({
         )}
       </div>
 
-      <div /* Days of Month */ className="grid grid-cols-7 gap-1">
+      <div /* Days of Month */ className="grid grow grid-cols-7 gap-1">
         {Array.from({ length: 42 }).map((_, index) => {
           const date = new Date(
             Number(selectedDate.slice(-4)),
@@ -263,7 +263,6 @@ const DatePicker: FC<IDatePickerProps> = ({
                 }/${(index + 1).toString().padStart(2, "0")
                 }/${selectedDate.slice(-4)}`
               )
-              console.log(selectedDate)
               setPickerMode("date")
             }}
             disabled={isDisabled}
