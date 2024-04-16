@@ -61,7 +61,7 @@ const TimePicker: FC<ITimePickerProps> = ({
           const startHour = Number(selectedTime.slice(0, 2))
           const handlePointerMove = (event: PointerEvent) => {
             const delta = event.clientY - startY
-            const hour = (Math.min(Math.max(Math.min(startHour + delta / 10), -1), 24) + 24) % 24
+            const hour = (Math.min(Math.max(Math.min(startHour - delta / 10), -1), 24) + 24) % 24
             setSelectedTime(
               `${hour.toString().split(".")[0].padStart(2, "0")
               }:${selectedTime.slice(3, 5)}`
@@ -125,10 +125,10 @@ const TimePicker: FC<ITimePickerProps> = ({
           const startMinute = Number(selectedTime.slice(3, 5))
           const handlePointerMove = (event: PointerEvent) => {
             const delta = event.clientY - startY
-            const minute = (Math.min(Math.max(Math.min(startMinute + delta / 10), -1), 60) + 60) % 60
+            const minute = (Math.min(Math.max(Math.min(startMinute - delta / 10), -1), 60) + 60) % 60
             setSelectedTime(
               `${selectedTime.slice(0, 2)
-              }:${minute.toString().padStart(2, "0").slice(0, 2)}`
+              }:${minute.toString().split(".")[0].padStart(2, "0")}`
             )
           }
           const handlePointerUp = () => {
