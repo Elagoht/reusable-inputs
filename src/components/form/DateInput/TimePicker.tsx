@@ -182,6 +182,14 @@ const TimePicker: FC<ITimePickerProps> = ({
     <div className="flex justify-evenly gap-2">
       <MouseIcon size={16} /> <TouchpadIcon size={16} /> <PointerIcon size={16} />
     </div>
+
+    <button
+      type="button"
+      className="rounded-lg mt-2 bg-emerald-500 dark:bg-emerald-600 dark:text-white text-gray-800 p-2 w-full"
+      onClick={() => setShow(false)}
+    >
+      Tamam
+    </button>
   </div>
 }
 
