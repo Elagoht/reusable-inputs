@@ -309,7 +309,7 @@ const DatePicker: FC<IDatePickerProps> = ({
       <div /* Years */ className="grid grid-cols-2 gap-1 flex-1">
         {Array.from({ length: 10 }).map((_, index) => {
           const isDisabled = minDate && new Date(
-            Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index,
+            Math.floor((Number(selectedDate.slice(-4)) + yearPage) / 10) * 10 + index + 1,
             Number(selectedDate.slice(3, 5)) - 1,
             1
           ) < minDate || maxDate && new Date(
